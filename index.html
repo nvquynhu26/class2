@@ -15,127 +15,203 @@
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #f9fafb;
+            color: #f1f5f9;
+            background-color: #0a092d;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(66, 85, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(255, 64, 129, 0.12) 0px, transparent 50%);
+            min-height: 100vh;
             padding: 24px;
         }
 
         header {
             text-align: center;
-            padding: 40px 0 20px;
+            padding: 40px 0 24px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #ff4081 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            text-shadow: 0 0 30px rgba(79, 172, 254, 0.3);
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1.05rem;
         }
 
         main {
             max-width: 720px;
             margin: 0 auto;
-            background: #ffffff;
-            padding: 32px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            background: #13143a;
+            padding: 36px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+
+        main h2 {
+            font-size: 1.35rem;
+            color: #f8fafc;
+            margin-bottom: 4px;
+        }
+
+        main > p {
+            color: #38bdf8;
+            font-weight: 500;
+            margin-bottom: 24px;
         }
 
         .form-group {
-            margin-top: 16px;
+            margin-top: 18px;
         }
 
         label {
             display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #4b5563;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            color: #38bdf8;
         }
 
         input[type="text"],
         textarea {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
+            padding: 12px 14px;
+            background-color: #1c1d4a;
+            border: 2px solid #2e3856;
+            border-radius: 10px;
             font-size: 15px;
+            color: #ffffff;
             font-family: inherit;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.25s ease;
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: #64748b;
         }
 
         input[type="text"]:focus,
         textarea:focus {
-            border-color: #2563eb;
+            border-color: #00f2fe;
+            background-color: #232559;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
         }
 
         textarea {
             resize: vertical;
-            min-height: 90px;
+            min-height: 95px;
         }
 
         button {
             display: inline-block;
-            margin-top: 16px;
-            padding: 10px 24px;
-            background-color: #2563eb;
+            margin-top: 20px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #ff4081 0%, #f43f5e 100%);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 15px;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+            transition: all 0.25s ease;
         }
 
         button:hover {
-            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 64, 129, 0.6);
+            background: linear-gradient(135deg, #ff5292 0%, #fb7185 100%);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         button:disabled {
-            background-color: #93c5fd;
+            background: #475569;
+            box-shadow: none;
             cursor: not-allowed;
+            transform: none;
         }
 
         .alert-msg {
-            margin-top: 12px;
-            padding: 10px 14px;
-            border-radius: 6px;
+            margin-top: 14px;
+            padding: 10px 16px;
+            border-radius: 8px;
             font-size: 14px;
+            font-weight: 600;
             display: none;
         }
 
         .alert-success {
-            background-color: #ecfdf5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid #10b981;
         }
 
         .alert-error {
-            background-color: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid #ef4444;
         }
 
         .recent-wishes {
-            margin-top: 36px;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 24px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 28px;
         }
 
         .recent-wishes h3 {
-            font-size: 18px;
-            margin-bottom: 16px;
-            color: #1f2937;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #a7f3d0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .recent-wishes h3::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 10px #10b981;
         }
 
         .wish-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
         .wish-card {
-            background-color: #f3f4f6;
-            padding: 14px 16px;
-            border-radius: 8px;
-            border-left: 4px solid #2563eb;
+            background-color: #1a1b4b;
+            padding: 16px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #10b981;
             animation: fadeIn 0.3s ease-in-out;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .wish-card:hover {
+            transform: translateX(4px);
+            border-left-color: #00f2fe;
+            background-color: #1e1f54;
         }
 
         @keyframes fadeIn {
@@ -151,25 +227,26 @@
         }
 
         .wish-author {
-            font-weight: 600;
-            color: #111827;
+            font-weight: 700;
+            color: #38bdf8;
             font-size: 14px;
         }
 
         .wish-time {
             font-size: 12px;
-            color: #6b7280;
+            color: #94a3b8;
         }
 
         .wish-text {
-            font-size: 14px;
-            color: #374151;
+            font-size: 14.5px;
+            color: #e2e8f0;
             white-space: pre-wrap;
             word-break: break-word;
+            line-height: 1.5;
         }
 
         .empty-state {
-            color: #6b7280;
+            color: #94a3b8;
             font-size: 14px;
             font-style: italic;
         }
@@ -197,7 +274,7 @@
                 <textarea id="userWish" placeholder="Write your heartfelt wish here..." required></textarea>
             </div>
 
-            <button type="submit" id="btnSubmit">Send Wish</button>
+            <button type="submit" id="btnSubmit">Send Wish ✨</button>
             <div id="statusAlert" class="alert-msg"></div>
         </form>
 
@@ -210,7 +287,7 @@
     </main>
 
     <script>
-        // DÁN URL GOOGLE APPS SCRIPT WEB APP CỦA BẠN VÀO ĐÂY
+        // DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza95F6Z8aVWuwygF-ecQwb8g4PCAFKzkP0gXznPmAIPX44v4SxoscvEy9XsWJaLJ9wqg/exec';
 
         const form = document.getElementById('wishForm');
@@ -265,7 +342,7 @@
             }
         }
 
-        // Gửi lời chúc và cập nhật tức thì lên giao diện
+        // Gửi lời chúc và cập nhật tức thì (Optimistic UI)
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -282,27 +359,27 @@
 
             if (!name || !wish) return;
 
-            // Xóa thông báo trống nếu là lời chúc đầu tiên
+            // Xóa thông báo trống nếu có
             const emptyEl = wishesContainer.querySelector('.empty-state');
             if (emptyEl) {
                 wishesContainer.innerHTML = '';
             }
 
-            // 1. CHÈN TỨC THÌ LỜI CHÚC LÊN ĐẦU GIAO DIỆN (Phản hồi < 0.1s)
+            // 1. Chèn tức thì thẻ mới lên đầu danh sách
             const newCard = createWishElement(name, 'Just now', wish);
             wishesContainer.insertBefore(newCard, wishesContainer.firstChild);
 
-            // Giới hạn hiển thị đúng 15 thẻ trên màn hình
+            // Giữ lại tối đa 15 thẻ trên màn hình
             while (wishesContainer.children.length > 15) {
                 wishesContainer.removeChild(wishesContainer.lastChild);
             }
 
-            // Xóa trắng form và báo thành công ngay lập tức
+            // Reset form và thông báo
             nameInput.value = '';
             wishInput.value = '';
-            showAlert('Your wish has been posted!', true);
+            showAlert('Your wish has been posted! ✨', true);
 
-            // 2. GỬI DỮ LIỆU CHẠY NGẦM ĐẾN GOOGLE SHEETS
+            // 2. Gửi ngầm tới Google Sheets
             const postData = new URLSearchParams();
             postData.append('name', name);
             postData.append('wish', wish);
