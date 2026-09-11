@@ -135,6 +135,12 @@
             padding: 14px 16px;
             border-radius: 8px;
             border-left: 4px solid #2563eb;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .wish-header {
@@ -177,7 +183,7 @@
     </header>
 
     <main>
-        <h2>Wishes</h2>
+        <h2>Today is Sep 11th 2026</h2>
         <p>Hope you have a wonderful day</p>
         
         <form id="wishForm">
@@ -205,7 +211,7 @@
 
     <script>
         // DÁN URL GOOGLE APPS SCRIPT WEB APP CỦA BẠN VÀO ĐÂY
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5Sy84uj_pe4EHYA66hvqZgbeogRemf7r6Vrz8V5Q4OEaDIE59fNIIfVuaj-e-2zOPZA/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza95F6Z8aVWuwygF-ecQwb8g4PCAFKzkP0gXznPmAIPX44v4SxoscvEy9XsWJaLJ9wqg/exec';
 
         const form = document.getElementById('wishForm');
         const submitBtn = document.getElementById('btnSubmit');
@@ -218,13 +224,26 @@
             statusAlert.style.display = 'block';
             setTimeout(() => {
                 statusAlert.style.display = 'none';
-            }, 4000);
+            }, 3000);
         }
 
-        // Tải 15 lời chúc gần nhất
+        function createWishElement(name, timestamp, wish) {
+            const li = document.createElement('li');
+            li.className = 'wish-card';
+            li.innerHTML = `
+                <div class="wish-header">
+                    <span class="wish-author">${escapeHtml(name)}</span>
+                    <span class="wish-time">${escapeHtml(timestamp)}</span>
+                </div>
+                <div class="wish-text">${escapeHtml(wish)}</div>
+            `;
+            return li;
+        }
+
+        // Tải 15 lời chúc gần nhất khi khởi động trang
         async function fetchRecentWishes() {
             if (SCRIPT_URL === 'THAY_BANG_URL_GOOGLE_APPS_SCRIPT_CUA_BAN') {
-                wishesContainer.innerHTML = '<li class="empty-state">Vui lòng thay thế SCRIPT_URL bằng URL Apps Script đã triển khai.</li>';
+                wishesContainer.innerHTML = '<li class="empty-state">Vui lòng thay thế SCRIPT_URL bằng URL Apps Script.</li>';
                 return;
             }
 
@@ -235,16 +254,7 @@
                 if (result.status === "success" && result.data && result.data.length > 0) {
                     wishesContainer.innerHTML = '';
                     result.data.forEach(item => {
-                        const li = document.createElement('li');
-                        li.className = 'wish-card';
-                        li.innerHTML = `
-                            <div class="wish-header">
-                                <span class="wish-author">${escapeHtml(item.name)}</span>
-                                <span class="wish-time">${escapeHtml(item.timestamp)}</span>
-                            </div>
-                            <div class="wish-text">${escapeHtml(item.wish)}</div>
-                        `;
-                        wishesContainer.appendChild(li);
+                        wishesContainer.appendChild(createWishElement(item.name, item.timestamp, item.wish));
                     });
                 } else {
                     wishesContainer.innerHTML = '<li class="empty-state">No wishes yet. Be the first to leave one!</li>';
@@ -255,8 +265,8 @@
             }
         }
 
-        // Xử lý gửi lời chúc bằng URL-Encoded (tránh triệt để lỗi CORS)
-        form.addEventListener('submit', async (e) => {
+        // Gửi lời chúc và cập nhật tức thì lên giao diện
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
 
             if (SCRIPT_URL === 'THAY_BANG_URL_GOOGLE_APPS_SCRIPT_CUA_BAN') {
@@ -272,41 +282,41 @@
 
             if (!name || !wish) return;
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
+            // Xóa thông báo trống nếu là lời chúc đầu tiên
+            const emptyEl = wishesContainer.querySelector('.empty-state');
+            if (emptyEl) {
+                wishesContainer.innerHTML = '';
+            }
 
-            // Dùng URLSearchParams tương thích 100% với Google Apps Script
+            // 1. CHÈN TỨC THÌ LỜI CHÚC LÊN ĐẦU GIAO DIỆN (Phản hồi < 0.1s)
+            const newCard = createWishElement(name, 'Just now', wish);
+            wishesContainer.insertBefore(newCard, wishesContainer.firstChild);
+
+            // Giới hạn hiển thị đúng 15 thẻ trên màn hình
+            while (wishesContainer.children.length > 15) {
+                wishesContainer.removeChild(wishesContainer.lastChild);
+            }
+
+            // Xóa trắng form và báo thành công ngay lập tức
+            nameInput.value = '';
+            wishInput.value = '';
+            showAlert('Your wish has been posted!', true);
+
+            // 2. GỬI DỮ LIỆU CHẠY NGẦM ĐẾN GOOGLE SHEETS
             const postData = new URLSearchParams();
             postData.append('name', name);
             postData.append('wish', wish);
 
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: postData.toString()
-                });
-
-                // Đăng thành công
-                nameInput.value = '';
-                wishInput.value = '';
-                showAlert('Your wish has been submitted successfully!', true);
-
-                // Chờ Google Sheet ghi nhận trong 1.2s rồi cập nhật lại danh sách bên dưới
-                setTimeout(() => {
-                    fetchRecentWishes();
-                }, 1200);
-
-            } catch (error) {
-                console.error("Error submitting wish:", error);
-                showAlert('Failed to send wish. Please try again.', false);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Send Wish';
-            }
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: postData.toString()
+            }).catch(err => {
+                console.error("Background sync failed:", err);
+            });
         });
 
         function escapeHtml(text) {
@@ -315,7 +325,6 @@
             return div.innerHTML;
         }
 
-        // Tải danh sách khi khởi động trang
         fetchRecentWishes();
     </script>
 </body>
