@@ -157,8 +157,8 @@
       transform: translate(-50%, -50%);
       cursor: grab;
       border-radius: 4px;
-      transition: box-shadow 0.2s ease, transform 0.15s ease;
-      display: flex;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
@@ -188,43 +188,47 @@
       z-index: 50 !important;
     }
 
-    /* Instructor Node (Largest & Center) */
+    /* Instructor Node (Trung tâm, to nhất, hiển thị rõ ràng không bị che cắt) */
     .node.instructor {
-      padding: 22px 38px;
-      font-size: 24px;
-      font-weight: 900;
-      background: radial-gradient(circle, rgba(45, 25, 10, 0.95) 0%, rgba(20, 15, 10, 0.98) 100%);
+      flex-direction: column;
+      padding: 14px 34px 18px 34px;
+      background: radial-gradient(circle, rgba(48, 26, 8, 0.95) 0%, rgba(18, 12, 8, 0.98) 100%);
       border: 2px solid var(--instructor-glow);
-      color: #ffe6b3;
-      box-shadow: 0 0 35px rgba(255, 153, 0, 0.4), inset 0 0 20px rgba(255, 153, 0, 0.25);
-      clip-path: polygon(14px 0%, 100% 0%, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0% 100%, 0% 14px);
-      letter-spacing: 2px;
+      border-radius: 8px;
+      box-shadow: 0 0 35px rgba(255, 153, 0, 0.45), inset 0 0 20px rgba(255, 153, 0, 0.2);
       z-index: 30;
+      gap: 6px;
     }
 
-    .node.instructor::before {
-      content: 'INSTRUCTOR';
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
+    .instructor-badge {
       font-family: 'Orbitron', monospace;
-      font-size: 9px;
-      letter-spacing: 2px;
-      background: var(--instructor-glow);
-      color: #000000;
-      padding: 1px 6px;
+      font-size: 10px;
       font-weight: 900;
-      border-radius: 2px;
+      letter-spacing: 2.5px;
+      background: var(--instructor-glow);
+      color: #0d0e12;
+      padding: 2px 10px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px rgba(255, 153, 0, 0.6);
+      display: inline-block;
+    }
+
+    .instructor-name {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #fff2d6;
+      text-shadow: 0 0 12px rgba(255, 153, 0, 0.7);
     }
 
     .node.instructor:hover {
-      box-shadow: 0 0 50px rgba(255, 153, 0, 0.8), inset 0 0 30px rgba(255, 153, 0, 0.5);
-      color: #ffffff;
+      border-color: #ffaa22;
+      box-shadow: 0 0 50px rgba(255, 153, 0, 0.8), inset 0 0 30px rgba(255, 153, 0, 0.4);
       z-index: 50 !important;
     }
 
-    /* Detailed Futuristic Tooltip Card */
+    /* Futuristic Tooltip Card */
     #infoCard {
       position: absolute;
       display: none;
@@ -297,7 +301,7 @@
       word-break: break-all;
     }
 
-    /* Specific Category Label Styling */
+    /* Category Labels */
     .lbl-food { color: var(--c-food); }
     .val-food { color: #d4ffe6; font-weight: 600; }
 
@@ -403,7 +407,6 @@
   </div>
 
   <script>
-    // Dữ liệu từ file Excel đã được đồng nhất hóa sang tiếng Hàn (Spiderman -> 스파이더맨, 기숙사... -> 기숙사)
     const membersData = [
       {
         id: "instructor_1",
@@ -507,7 +510,7 @@
         name: "원유미",
         food: "샤브샤브",
         location: "방배동",
-        movie: "스파이더맨", // Chuyển từ "Spiderman" sang tiếng Hàn
+        movie: "스파이더맨",
         singer: "Alvaro Soler",
         sns: "@nv.quynhu",
         email: "nv.quynhu26@gmail.com",
@@ -623,12 +626,11 @@
       }
     ];
 
-    // Color definitions for links
     const CATEGORY_COLORS = {
-      food: '#00ff88',     // Xanh lá
-      location: '#00d4ff', // Xanh dương
-      movie: '#ff2a85',    // Hồng
-      singer: '#b388ff'    // Tím
+      food: '#00ff88',
+      location: '#00d4ff',
+      movie: '#ff2a85',
+      singer: '#b388ff'
     };
 
     const activeFilters = {
@@ -651,11 +653,8 @@
       canvas.height = window.innerHeight;
       drawLines();
     }
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-    });
+    window.addEventListener('resize', resizeCanvas);
 
-    // Toggle Filters
     function toggleCategory(cat, elem) {
       activeFilters[cat] = !activeFilters[cat];
       if (activeFilters[cat]) {
@@ -666,7 +665,6 @@
       drawLines();
     }
 
-    // Initialize Layout
     function initNodes() {
       const w = window.innerWidth;
       const h = window.innerHeight;
@@ -679,10 +677,9 @@
       // Giảng viên ở giữa
       nodePositions[instructor.id] = { x: centerX, y: centerY };
 
-      // Sinh viên xung quanh (2 vòng ellipse để thoáng và đẹp mắt)
+      // Học sinh phân bố quanh 2 vòng
       const totalStudents = students.length;
       students.forEach((student, index) => {
-        // Phân lớp vòng trong (8 người) và vòng ngoài (9 người)
         const isInner = index % 2 === 0;
         const radiusX = isInner ? Math.min(w, h) * 0.28 : Math.min(w, h) * 0.42;
         const radiusY = isInner ? Math.min(w, h) * 0.23 : Math.min(w, h) * 0.35;
@@ -694,21 +691,28 @@
         };
       });
 
-      // Render HTML Nodes
+      // Tạo các Element
       membersData.forEach(member => {
         const div = document.createElement('div');
         div.className = `node ${member.role}`;
         div.id = `node-${member.id}`;
-        div.innerText = member.name;
+
+        if (member.role === 'instructor') {
+          // Bố cục rõ ràng: thẻ badge ở trên, tên ở dưới
+          div.innerHTML = `
+            <span class="instructor-badge">INSTRUCTOR</span>
+            <span class="instructor-name">${member.name}</span>
+          `;
+        } else {
+          div.innerText = member.name;
+        }
 
         const pos = nodePositions[member.id];
         div.style.left = `${pos.x}px`;
         div.style.top = `${pos.y}px`;
 
-        // Event Dragging
         enableDrag(div, member.id);
 
-        // Event Hover Tooltip
         div.addEventListener('mouseenter', (e) => showCard(member, e));
         div.addEventListener('mousemove', (e) => moveCard(e));
         div.addEventListener('mouseleave', hideCard);
@@ -720,14 +724,13 @@
       resizeCanvas();
     }
 
-    // Drag and drop implementation
     function enableDrag(elem, id) {
       let isDragging = false;
       let startX, startY;
       let initialNodeX, initialNodeY;
 
       elem.addEventListener('mousedown', (e) => {
-        if (e.button !== 0) return; // Chỉ chuột trái
+        if (e.button !== 0) return;
         isDragging = true;
         startX = e.clientX;
         startY = e.clientY;
@@ -763,7 +766,6 @@
       });
     }
 
-    // Tooltip Info Card
     function showCard(member, e) {
       document.getElementById('cName').innerText = member.name;
       document.getElementById('cRole').innerText = member.role === 'instructor' ? 'INSTRUCTOR (강사)' : 'STUDENT';
@@ -802,7 +804,6 @@
       infoCard.style.display = 'none';
     }
 
-    // Vẽ các đường liên kết giữa các sinh viên/giảng viên có cùng sở thích
     function drawLines() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -812,9 +813,8 @@
         if (!activeFilters[cat]) return;
 
         const color = CATEGORY_COLORS[cat];
-
-        // Nhóm các thành viên theo giá trị
         const groups = {};
+
         membersData.forEach(m => {
           let val = m[cat];
           if (!val || val === '-' || val.trim() === '') return;
@@ -823,7 +823,6 @@
           groups[val].push(m.id);
         });
 
-        // Vẽ các đường line nối giữa từng cặp có cùng giá trị
         Object.keys(groups).forEach(val => {
           const ids = groups[val];
           if (ids.length > 1) {
@@ -847,7 +846,6 @@
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
 
-      // Glow effect neon
       ctx.strokeStyle = color;
       ctx.lineWidth = 2.0;
       ctx.shadowColor = color;
@@ -855,7 +853,6 @@
       ctx.globalAlpha = 0.65;
       ctx.stroke();
 
-      // Điểm pulse nhỏ ở trung điểm đường nối
       const midX = (x1 + x2) / 2;
       const midY = (y1 + y2) / 2;
       ctx.beginPath();
@@ -868,7 +865,6 @@
       ctx.restore();
     }
 
-    // Khởi động
     window.addEventListener('DOMContentLoaded', () => {
       initNodes();
     });
