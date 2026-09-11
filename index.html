@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Youme</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-dark: #07090e;
-      --panel-bg: rgba(13, 17, 26, 0.85);
+      --panel-bg: rgba(13, 17, 26, 0.92);
       --border-glow: rgba(0, 240, 255, 0.4);
       --instructor-glow: #ff9900;
       
@@ -157,7 +157,7 @@
       transform: translate(-50%, -50%);
       cursor: grab;
       border-radius: 4px;
-      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -181,14 +181,16 @@
       clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
     }
 
+    /* Hover effect on student node */
     .node.student:hover {
+      transform: translate(-50%, -50%) scale(1.08);
       border-color: #00f0ff;
       color: #ffffff;
-      box-shadow: 0 0 25px rgba(0, 240, 255, 0.6), inset 0 0 15px rgba(0, 240, 255, 0.3);
-      z-index: 50 !important;
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.7), inset 0 0 15px rgba(0, 240, 255, 0.3);
+      z-index: 60 !important;
     }
 
-    /* Instructor Node (Trung tâm, to nhất, hiển thị rõ ràng không bị che cắt) */
+    /* Instructor Node */
     .node.instructor {
       flex-direction: column;
       padding: 14px 34px 18px 34px;
@@ -222,25 +224,34 @@
       text-shadow: 0 0 12px rgba(255, 153, 0, 0.7);
     }
 
+    /* Hover effect on instructor node */
     .node.instructor:hover {
+      transform: translate(-50%, -50%) scale(1.05);
       border-color: #ffaa22;
-      box-shadow: 0 0 50px rgba(255, 153, 0, 0.8), inset 0 0 30px rgba(255, 153, 0, 0.4);
-      z-index: 50 !important;
+      box-shadow: 0 0 55px rgba(255, 153, 0, 0.9), inset 0 0 30px rgba(255, 153, 0, 0.4);
+      z-index: 60 !important;
     }
 
-    /* Futuristic Tooltip Card */
+    /* Selected state */
+    .node.selected {
+      outline: 2px dashed #00f0ff;
+      outline-offset: 4px;
+    }
+
+    /* Clickable Futuristic Modal Card */
     #infoCard {
       position: absolute;
       display: none;
       z-index: 999;
-      pointer-events: none;
-      width: 320px;
+      pointer-events: auto; /* Cho phép click vào các link */
+      user-select: text;    /* Cho phép copy thông tin */
+      width: 340px;
       background: rgba(10, 14, 23, 0.96);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
       border: 1.5px solid #00f0ff;
       border-radius: 6px;
       padding: 18px 20px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.25);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 240, 255, 0.35);
       font-size: 13px;
     }
 
@@ -257,14 +268,20 @@
     .card-header {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       padding-bottom: 10px;
       margin-bottom: 12px;
     }
 
+    .card-header-left {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
     .card-name {
-      font-size: 20px;
+      font-size: 21px;
       font-weight: 900;
       color: #ffffff;
       letter-spacing: 1px;
@@ -280,25 +297,61 @@
       border-radius: 3px;
     }
 
+    .card-close-btn {
+      cursor: pointer;
+      font-family: 'Orbitron', monospace;
+      color: #8899a6;
+      font-size: 16px;
+      padding: 2px 6px;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .card-close-btn:hover {
+      color: #ff2a85;
+      text-shadow: 0 0 8px #ff2a85;
+    }
+
     .card-item {
       display: flex;
       margin-bottom: 9px;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     .card-label {
-      width: 82px;
+      width: 84px;
       flex-shrink: 0;
       font-weight: 700;
       font-size: 11px;
       letter-spacing: 0.5px;
       text-transform: uppercase;
+      user-select: none;
     }
 
     .card-value {
       flex: 1;
       font-weight: 500;
       word-break: break-all;
+    }
+
+    /* Clickable Link Styles */
+    .card-value a {
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-value a:hover {
+      text-decoration: underline;
+      filter: brightness(1.3);
+    }
+
+    .card-value a::after {
+      content: '↗';
+      font-size: 10px;
+      opacity: 0.7;
     }
 
     /* Category Labels */
@@ -315,13 +368,13 @@
     .val-singer { color: #ebd9ff; font-weight: 600; }
 
     .lbl-sns { color: var(--c-sns); }
-    .val-sns { color: #fff1c7; font-family: 'Share Tech Mono', monospace; }
+    .val-sns a { color: #ffd166; font-family: 'Share Tech Mono', monospace; font-weight: 600; }
 
     .lbl-email { color: var(--c-email); }
-    .val-email { color: #c2fbeb; font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+    .val-email a { color: #5effd2; font-family: 'Share Tech Mono', monospace; font-size: 12px; }
 
-    .lbl-github { color: #a0aec0; }
-    .val-github { color: #ffffff; font-family: 'Share Tech Mono', monospace; font-size: 11px; }
+    .lbl-github { color: #9aa8b8; }
+    .val-github a { color: #00f0ff; font-family: 'Share Tech Mono', monospace; font-size: 11px; }
 
     /* Footer Hint */
     .footer-hint {
@@ -365,11 +418,14 @@
   <!-- Drag Nodes Container -->
   <div id="nodesContainer"></div>
 
-  <!-- Futuristic Tooltip Card -->
+  <!-- Interactive Modal Card -->
   <div id="infoCard">
     <div class="card-header">
-      <span class="card-name" id="cName">-</span>
-      <span class="card-role" id="cRole">STUDENT</span>
+      <div class="card-header-left">
+        <span class="card-name" id="cName">-</span>
+        <span class="card-role" id="cRole">STUDENT</span>
+      </div>
+      <span class="card-close-btn" onclick="hideCard()">✕</span>
     </div>
     <div class="card-item">
       <span class="card-label lbl-food">음식</span>
@@ -388,7 +444,7 @@
       <span class="card-value val-singer" id="cSinger">-</span>
     </div>
     <div class="card-item">
-      <span class="card-label lbl-sns">SNS</span>
+      <span class="card-label lbl-sns">INSTA/SNS</span>
       <span class="card-value val-sns" id="cSns">-</span>
     </div>
     <div class="card-item">
@@ -402,8 +458,8 @@
   </div>
 
   <div class="footer-hint">
-    <div>[DRAG & DROP] 각 노드를 마우스로 드래그하여 자유롭게 배치할 수 있습니다.</div>
-    <div>[HOVER] 노드에 마우스를 올리면 상세 정보를 열람할 수 있습니다.</div>
+    <div>[CLICK] 이름을 클릭하면 상세 정보 카드(링크 포함)가 고정되어 나타납니다.</div>
+    <div>[DRAG & DROP] 각 노드를 마우스로 드래그하여 자유롭게 이동시킬 수 있습니다.</div>
   </div>
 
   <script>
@@ -647,6 +703,7 @@
 
     let nodeElements = {};
     let nodePositions = {};
+    let selectedMemberId = null;
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -677,7 +734,7 @@
       // Giảng viên ở giữa
       nodePositions[instructor.id] = { x: centerX, y: centerY };
 
-      // Học sinh phân bố quanh 2 vòng
+      // Học sinh phân bố đều quanh 2 vòng tròn
       const totalStudents = students.length;
       students.forEach((student, index) => {
         const isInner = index % 2 === 0;
@@ -691,14 +748,13 @@
         };
       });
 
-      // Tạo các Element
+      // Tạo các Node HTML
       membersData.forEach(member => {
         const div = document.createElement('div');
         div.className = `node ${member.role}`;
         div.id = `node-${member.id}`;
 
         if (member.role === 'instructor') {
-          // Bố cục rõ ràng: thẻ badge ở trên, tên ở dưới
           div.innerHTML = `
             <span class="instructor-badge">INSTRUCTOR</span>
             <span class="instructor-name">${member.name}</span>
@@ -711,54 +767,72 @@
         div.style.left = `${pos.x}px`;
         div.style.top = `${pos.y}px`;
 
-        enableDrag(div, member.id);
-
-        div.addEventListener('mouseenter', (e) => showCard(member, e));
-        div.addEventListener('mousemove', (e) => moveCard(e));
-        div.addEventListener('mouseleave', hideCard);
+        // Kéo thả & Click hiển thị thông tin
+        setupNodeInteraction(div, member);
 
         container.appendChild(div);
         nodeElements[member.id] = div;
       });
 
+      // Click ra ngoài background để đóng bảng
+      document.body.addEventListener('click', (e) => {
+        if (!infoCard.contains(e.target) && !e.target.closest('.node') && !e.target.closest('.controls')) {
+          hideCard();
+        }
+      });
+
       resizeCanvas();
     }
 
-    function enableDrag(elem, id) {
+    // Thiết lập kéo thả và click cho từng Node
+    function setupNodeInteraction(elem, member) {
       let isDragging = false;
       let startX, startY;
       let initialNodeX, initialNodeY;
+      let movedDistance = 0;
 
       elem.addEventListener('mousedown', (e) => {
         if (e.button !== 0) return;
         isDragging = true;
+        movedDistance = 0;
         startX = e.clientX;
         startY = e.clientY;
-        initialNodeX = nodePositions[id].x;
-        initialNodeY = nodePositions[id].y;
+        initialNodeX = nodePositions[member.id].x;
+        initialNodeY = nodePositions[member.id].y;
         elem.style.zIndex = 1000;
-        hideCard();
 
         function onMouseMove(e) {
           if (!isDragging) return;
           const dx = e.clientX - startX;
           const dy = e.clientY - startY;
+          movedDistance = Math.hypot(dx, dy);
+
           const newX = initialNodeX + dx;
           const newY = initialNodeY + dy;
-
-          nodePositions[id].x = newX;
-          nodePositions[id].y = newY;
+          nodePositions[member.id].x = newX;
+          nodePositions[member.id].y = newY;
           elem.style.left = `${newX}px`;
           elem.style.top = `${newY}px`;
+
+          // Nếu đang mở card của chính người này thì cập nhật vị trí card theo luôn
+          if (selectedMemberId === member.id && infoCard.style.display === 'block') {
+            positionCardNearNode(newX, newY);
+          }
 
           drawLines();
         }
 
-        function onMouseUp() {
+        function onMouseUp(e) {
           isDragging = false;
           elem.style.zIndex = elem.classList.contains('instructor') ? 30 : 20;
           window.removeEventListener('mousemove', onMouseMove);
           window.removeEventListener('mouseup', onMouseUp);
+
+          // Nếu khoảng cách di chuyển nhỏ hơn 5px -> tính là click để mở thông tin
+          if (movedDistance < 5) {
+            e.stopPropagation();
+            openCard(member);
+          }
         }
 
         window.addEventListener('mousemove', onMouseMove);
@@ -766,7 +840,15 @@
       });
     }
 
-    function showCard(member, e) {
+    // Mở bảng thông tin và định dạng các link
+    function openCard(member) {
+      selectedMemberId = member.id;
+
+      // Xóa viền selected cũ và gán cho node hiện tại
+      document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
+      const activeNode = nodeElements[member.id];
+      if (activeNode) activeNode.classList.add('selected');
+
       document.getElementById('cName').innerText = member.name;
       document.getElementById('cRole').innerText = member.role === 'instructor' ? 'INSTRUCTOR (강사)' : 'STUDENT';
       document.getElementById('cRole').style.borderColor = member.role === 'instructor' ? 'var(--instructor-glow)' : 'rgba(0, 240, 255, 0.4)';
@@ -776,32 +858,68 @@
       document.getElementById('cLoc').innerText = member.location || '-';
       document.getElementById('cMovie').innerText = member.movie || '-';
       document.getElementById('cSinger').innerText = member.singer || '-';
-      document.getElementById('cSns').innerText = member.sns || '-';
-      document.getElementById('cEmail').innerText = member.email || '-';
-      document.getElementById('cGithub').innerText = member.github || '-';
+
+      // 1. Format Instagram/SNS Link
+      const snsContainer = document.getElementById('cSns');
+      const rawSns = (member.sns || '').trim();
+      if (rawSns && rawSns !== '-') {
+        const cleanHandle = rawSns.replace(/^@/, '').trim();
+        const instaUrl = `https://instagram.com/${cleanHandle}`;
+        snsContainer.innerHTML = `<a href="${instaUrl}" target="_blank" rel="noopener noreferrer">${rawSns}</a>`;
+      } else {
+        snsContainer.innerText = '-';
+      }
+
+      // 2. Format Gmail Link
+      const emailContainer = document.getElementById('cEmail');
+      const rawEmail = (member.email || '').trim();
+      if (rawEmail && rawEmail !== '-') {
+        emailContainer.innerHTML = `<a href="mailto:${rawEmail}" target="_blank" rel="noopener noreferrer">${rawEmail}</a>`;
+      } else {
+        emailContainer.innerText = '-';
+      }
+
+      // 3. Format GitHub Link
+      const githubContainer = document.getElementById('cGithub');
+      let rawGithub = (member.github || '').trim();
+      if (rawGithub && rawGithub !== '-') {
+        if (!rawGithub.startsWith('http')) {
+          rawGithub = 'https://' + rawGithub;
+        }
+        githubContainer.innerHTML = `<a href="${rawGithub}" target="_blank" rel="noopener noreferrer">${rawGithub}</a>`;
+      } else {
+        githubContainer.innerText = '-';
+      }
 
       infoCard.style.display = 'block';
-      moveCard(e);
+      const pos = nodePositions[member.id];
+      positionCardNearNode(pos.x, pos.y);
     }
 
-    function moveCard(e) {
-      const offset = 18;
-      let x = e.clientX + offset;
-      let y = e.clientY + offset;
+    function positionCardNearNode(nodeX, nodeY) {
+      const cardWidth = 340;
+      const cardHeight = 310;
+      let left = nodeX + 40;
+      let top = nodeY - 60;
 
-      if (x + 330 > window.innerWidth) {
-        x = e.clientX - 330 - 10;
+      // Tránh tràn viền màn hình
+      if (left + cardWidth > window.innerWidth - 20) {
+        left = nodeX - cardWidth - 40;
       }
-      if (y + 300 > window.innerHeight) {
-        y = e.clientY - 300 - 10;
+      if (top + cardHeight > window.innerHeight - 20) {
+        top = window.innerHeight - cardHeight - 20;
       }
+      if (top < 70) top = 70;
+      if (left < 20) left = 20;
 
-      infoCard.style.left = `${x}px`;
-      infoCard.style.top = `${y}px`;
+      infoCard.style.left = `${left}px`;
+      infoCard.style.top = `${top}px`;
     }
 
     function hideCard() {
       infoCard.style.display = 'none';
+      selectedMemberId = null;
+      document.querySelectorAll('.node').forEach(n => n.classList.remove('selected'));
     }
 
     function drawLines() {
