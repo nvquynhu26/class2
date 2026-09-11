@@ -1,508 +1,877 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Youme means You and Me</title>
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Youme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Noto+Sans+KR:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --panel-bg: rgba(13, 17, 26, 0.85);
+      --border-glow: rgba(0, 240, 255, 0.4);
+      --instructor-glow: #ff9900;
+      
+      /* Color definitions per category */
+      --c-food: #00ff88;       /* Xanh lá */
+      --c-loc: #00d4ff;        /* Xanh dương */
+      --c-movie: #ff2a85;      /* Hồng neon */
+      --c-singer: #b388ff;     /* Tím */
+      --c-sns: #ffd166;        /* Vàng nhạt */
+      --c-email: #06d6a0;      /* Xanh ngọc */
+      --c-github: #ffffff;     /* Trắng */
+    }
 
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            line-height: 1.6;
-            color: #f1f5f9;
-            background-color: #0a092d;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(66, 85, 255, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(255, 64, 129, 0.15) 0px, transparent 50%);
-            min-height: 100vh;
-            padding: 24px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
 
-        header {
-            text-align: center;
-            padding: 40px 0 24px;
-        }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(20, 30, 55, 0.4) 0%, transparent 80%),
+        linear-gradient(rgba(0, 255, 200, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 200, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #e0e6ed;
+    }
 
-        /* Tiêu đề màu hồng Neon rực rỡ */
-        header h1 {
-            font-size: 2.3rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #ff2a85 0%, #ff5e98 50%, #ff80bf 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 0 20px rgba(255, 42, 133, 0.5));
-        }
+    /* Robotic HUD Header */
+    header {
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      z-index: 100;
+      pointer-events: none;
+    }
 
-        header p {
-            color: #94a3b8;
-            font-size: 1.05rem;
-        }
+    .site-tag {
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: #00f0ff;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        main {
-            max-width: 720px;
-            margin: 0 auto;
-            background: #13143a;
-            padding: 36px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
-        }
+    .site-tag::before {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: #00f0ff;
+      box-shadow: 0 0 10px #00f0ff;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    }
 
-        main h2 {
-            font-size: 1.35rem;
-            color: #f8fafc;
-            margin-bottom: 4px;
-        }
+    h1.main-title {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-shadow: 0 0 15px rgba(0, 240, 255, 0.6), 0 0 30px rgba(0, 240, 255, 0.2);
+      margin-top: 4px;
+    }
 
-        main > p {
-            color: #38bdf8;
-            font-weight: 500;
-            margin-bottom: 24px;
-        }
+    /* Controls Panel */
+    .controls {
+      position: absolute;
+      top: 25px;
+      right: 30px;
+      z-index: 100;
+      background: var(--panel-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px 18px;
+      display: flex;
+      gap: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
 
-        .form-group {
-            margin-top: 18px;
-        }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: all 0.2s ease;
+    }
 
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            color: #38bdf8;
-        }
+    .legend-item:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
 
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 12px 14px;
-            background-color: #1c1d4a;
-            border: 2px solid #2e3856;
-            border-radius: 10px;
-            font-size: 15px;
-            color: #ffffff;
-            font-family: inherit;
-            outline: none;
-            transition: all 0.25s ease;
-        }
+    .legend-item.active {
+      font-weight: 700;
+      text-shadow: 0 0 8px currentColor;
+    }
 
-        input[type="text"]::placeholder,
-        textarea::placeholder {
-            color: #64748b;
-        }
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 6px currentColor;
+    }
 
-        input[type="text"]:focus,
-        textarea:focus {
-            border-color: #00f2fe;
-            background-color: #232559;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
-        }
+    /* Canvas for Lines */
+    #connectionsCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+    }
 
-        textarea {
-            resize: vertical;
-            min-height: 95px;
-        }
+    /* Workspace */
+    #nodesContainer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+    }
 
-        .btn-submit {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 28px;
-            background: linear-gradient(135deg, #ff2a85 0%, #ff5e98 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(255, 42, 133, 0.4);
-            transition: all 0.25s ease;
-        }
+    /* Robotic Node Styling */
+    .node {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      cursor: grab;
+      border-radius: 4px;
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
 
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 22px rgba(255, 42, 133, 0.6);
-            background: linear-gradient(135deg, #ff4395 0%, #ff73a8 100%);
-        }
+    .node:active {
+      cursor: grabbing;
+    }
 
-        .btn-submit:active {
-            transform: translateY(0);
-        }
+    /* Student Node */
+    .node.student {
+      padding: 10px 20px;
+      font-size: 15px;
+      background: rgba(14, 21, 37, 0.9);
+      border: 1.5px solid rgba(0, 240, 255, 0.4);
+      color: #d1ecff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15), inset 0 0 10px rgba(0, 240, 255, 0.08);
+      clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+    }
 
-        .btn-submit:disabled {
-            background: #475569;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
-        }
+    .node.student:hover {
+      border-color: #00f0ff;
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.6), inset 0 0 15px rgba(0, 240, 255, 0.3);
+      z-index: 50 !important;
+    }
 
-        .alert-msg {
-            margin-top: 14px;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            display: none;
-        }
+    /* Instructor Node (Largest & Center) */
+    .node.instructor {
+      padding: 22px 38px;
+      font-size: 24px;
+      font-weight: 900;
+      background: radial-gradient(circle, rgba(45, 25, 10, 0.95) 0%, rgba(20, 15, 10, 0.98) 100%);
+      border: 2px solid var(--instructor-glow);
+      color: #ffe6b3;
+      box-shadow: 0 0 35px rgba(255, 153, 0, 0.4), inset 0 0 20px rgba(255, 153, 0, 0.25);
+      clip-path: polygon(14px 0%, 100% 0%, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0% 100%, 0% 14px);
+      letter-spacing: 2px;
+      z-index: 30;
+    }
 
-        .alert-success {
-            background-color: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid #10b981;
-        }
+    .node.instructor::before {
+      content: 'INSTRUCTOR';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      background: var(--instructor-glow);
+      color: #000000;
+      padding: 1px 6px;
+      font-weight: 900;
+      border-radius: 2px;
+    }
 
-        .alert-error {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: #f87171;
-            border: 1px solid #ef4444;
-        }
+    .node.instructor:hover {
+      box-shadow: 0 0 50px rgba(255, 153, 0, 0.8), inset 0 0 30px rgba(255, 153, 0, 0.5);
+      color: #ffffff;
+      z-index: 50 !important;
+    }
 
-        .recent-wishes {
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 28px;
-        }
+    /* Detailed Futuristic Tooltip Card */
+    #infoCard {
+      position: absolute;
+      display: none;
+      z-index: 999;
+      pointer-events: none;
+      width: 320px;
+      background: rgba(10, 14, 23, 0.96);
+      backdrop-filter: blur(14px);
+      border: 1.5px solid #00f0ff;
+      border-radius: 6px;
+      padding: 18px 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 240, 255, 0.25);
+      font-size: 13px;
+    }
 
-        .recent-wishes-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+    #infoCard::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, #00f0ff, #ff2a85, #00ff88);
+    }
 
-        .recent-wishes h3 {
-            font-size: 19px;
-            font-weight: 700;
-            color: #a7f3d0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
 
-        .recent-wishes h3::before {
-            content: "";
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #10b981;
-            box-shadow: 0 0 10px #10b981;
-        }
+    .card-name {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
 
-        .wish-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
+    .card-role {
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      padding: 2px 6px;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      color: #00f0ff;
+      border-radius: 3px;
+    }
 
-        .wish-card {
-            background-color: #1a1b4b;
-            padding: 16px 18px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-left: 4px solid #10b981;
-            animation: fadeIn 0.3s ease-in-out;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
+    .card-item {
+      display: flex;
+      margin-bottom: 9px;
+      line-height: 1.4;
+    }
 
-        .wish-card:hover {
-            transform: translateX(4px);
-            border-left-color: #00f2fe;
-            background-color: #1e1f54;
-        }
+    .card-label {
+      width: 82px;
+      flex-shrink: 0;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .card-value {
+      flex: 1;
+      font-weight: 500;
+      word-break: break-all;
+    }
 
-        .wish-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
+    /* Specific Category Label Styling */
+    .lbl-food { color: var(--c-food); }
+    .val-food { color: #d4ffe6; font-weight: 600; }
 
-        .wish-author {
-            font-weight: 700;
-            color: #38bdf8;
-            font-size: 14px;
-        }
+    .lbl-loc { color: var(--c-loc); }
+    .val-loc { color: #cbf3ff; font-weight: 600; }
 
-        .wish-time {
-            font-size: 12px;
-            color: #94a3b8;
-        }
+    .lbl-movie { color: var(--c-movie); }
+    .val-movie { color: #ffd1e4; font-weight: 600; }
 
-        .wish-text {
-            font-size: 14.5px;
-            color: #e2e8f0;
-            white-space: pre-wrap;
-            word-break: break-word;
-            line-height: 1.5;
-        }
+    .lbl-singer { color: var(--c-singer); }
+    .val-singer { color: #ebd9ff; font-weight: 600; }
 
-        .empty-state {
-            color: #94a3b8;
-            font-size: 14px;
-            font-style: italic;
-        }
+    .lbl-sns { color: var(--c-sns); }
+    .val-sns { color: #fff1c7; font-family: 'Share Tech Mono', monospace; }
 
-        /* Phân trang với nút mũi tên trái phải */
-        .pagination-container {
-            margin-top: 24px;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-        }
+    .lbl-email { color: var(--c-email); }
+    .val-email { color: #c2fbeb; font-family: 'Share Tech Mono', monospace; font-size: 12px; }
 
-        .nav-btn {
-            background-color: #1c1d4a;
-            border: 1px solid #2e3856;
-            color: #00f2fe;
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
+    .lbl-github { color: #a0aec0; }
+    .val-github { color: #ffffff; font-family: 'Share Tech Mono', monospace; font-size: 11px; }
 
-        .nav-btn:hover:not(:disabled) {
-            background-color: #00f2fe;
-            color: #0a092d;
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-            transform: scale(1.05);
-        }
-
-        .nav-btn:disabled {
-            color: #475569;
-            border-color: #24264d;
-            background-color: #141538;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-
-        .page-info {
-            font-size: 14px;
-            font-weight: 600;
-            color: #94a3b8;
-            min-width: 100px;
-            text-align: center;
-        }
-    </style>
+    /* Footer Hint */
+    .footer-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 30px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+      line-height: 1.6;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>Youme means You and Me</h1>
-        <p>Hey, how are you feeling today?</p>
-    </header>
+  <header>
+    <div class="site-tag">SYSTEM // YOUME CORE</div>
+    <h1 class="main-title">JS프로젝트 스튜디오</h1>
+  </header>
 
-    <main>
-        <h2>Wishes</h2>
-        <p>Hope you have a wonderful day</p>
-        
-        <form id="wishForm">
-            <div class="form-group">
-                <label for="userName">Your Name</label>
-                <input type="text" id="userName" placeholder="Enter your name" required>
-            </div>
+  <!-- Filter Toggle -->
+  <div class="controls">
+    <div class="legend-item active" style="color: var(--c-movie);" onclick="toggleCategory('movie', this)">
+      <span class="legend-dot" style="background: var(--c-movie);"></span> 영화/드라마
+    </div>
+    <div class="legend-item active" style="color: var(--c-loc);" onclick="toggleCategory('location', this)">
+      <span class="legend-dot" style="background: var(--c-loc);"></span> 사는 곳
+    </div>
+    <div class="legend-item active" style="color: var(--c-singer);" onclick="toggleCategory('singer', this)">
+      <span class="legend-dot" style="background: var(--c-singer);"></span> 가수
+    </div>
+    <div class="legend-item active" style="color: var(--c-food);" onclick="toggleCategory('food', this)">
+      <span class="legend-dot" style="background: var(--c-food);"></span> 음식
+    </div>
+  </div>
 
-            <div class="form-group">
-                <label for="userWish">Your Wish</label>
-                <textarea id="userWish" placeholder="Write your heartfelt wish here..." required></textarea>
-            </div>
+  <!-- Drawing Lines Canvas -->
+  <canvas id="connectionsCanvas"></canvas>
 
-            <button type="submit" id="btnSubmit" class="btn-submit">Send Wish ✨</button>
-            <div id="statusAlert" class="alert-msg"></div>
-        </form>
+  <!-- Drag Nodes Container -->
+  <div id="nodesContainer"></div>
 
-        <section class="recent-wishes">
-            <div class="recent-wishes-header">
-                <h3>Wishes</h3>
-            </div>
-            
-            <ul class="wish-list" id="wishesContainer">
-                <li class="empty-state">Loading wishes...</li>
-            </ul>
+  <!-- Futuristic Tooltip Card -->
+  <div id="infoCard">
+    <div class="card-header">
+      <span class="card-name" id="cName">-</span>
+      <span class="card-role" id="cRole">STUDENT</span>
+    </div>
+    <div class="card-item">
+      <span class="card-label lbl-food">음식</span>
+      <span class="card-value val-food" id="cFood">-</span>
+    </div>
+    <div class="card-item">
+      <span class="card-label lbl-loc">사는 곳</span>
+      <span class="card-value val-loc" id="cLoc">-</span>
+    </div>
+    <div class="card-item">
+      <span class="card-label lbl-movie">영화/드라마</span>
+      <span class="card-value val-movie" id="cMovie">-</span>
+    </div>
+    <div class="card-item">
+      <span class="card-label lbl-singer">가수</span>
+      <span class="card-value val-singer" id="cSinger">-</span>
+    </div>
+    <div class="card-item">
+      <span class="card-label lbl-sns">SNS</span>
+      <span class="card-value val-sns" id="cSns">-</span>
+    </div>
+    <div class="card-item">
+      <span class="card-label lbl-email">GMAIL</span>
+      <span class="card-value val-email" id="cEmail">-</span>
+    </div>
+    <div class="card-item">
+      <span class="card-label lbl-github">GITHUB</span>
+      <span class="card-value val-github" id="cGithub">-</span>
+    </div>
+  </div>
 
-            <!-- Bộ điều khiển chuyển trang -->
-            <div class="pagination-container" id="pagination">
-                <button type="button" class="nav-btn" id="prevBtn" title="Previous Page">←</button>
-                <span class="page-info" id="pageInfo">Page 1 of 1</span>
-                <button type="button" class="nav-btn" id="nextBtn" title="Next Page">→</button>
-            </div>
-        </section>
-    </main>
+  <div class="footer-hint">
+    <div>[DRAG & DROP] 각 노드를 마우스로 드래그하여 자유롭게 배치할 수 있습니다.</div>
+    <div>[HOVER] 노드에 마우스를 올리면 상세 정보를 열람할 수 있습니다.</div>
+  </div>
 
-    <script>
-        // Link Apps Script của bạn
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJhS17FZ8OhH9oVQM-hLA-xmTjC-InIfNucGhCosOdpwz8pODMTsNKwDRkImIoBkGpQA/exec';
+  <script>
+    // Dữ liệu từ file Excel đã được đồng nhất hóa sang tiếng Hàn (Spiderman -> 스파이더맨, 기숙사... -> 기숙사)
+    const membersData = [
+      {
+        id: "instructor_1",
+        role: "instructor",
+        name: "이병학",
+        food: "텐동",
+        location: "평촌",
+        movie: "슈퍼뒤에서 담배피우는 두사람",
+        singer: "스피츠",
+        sns: "@lee____bh",
+        email: "jazzwine@gmail.com",
+        github: "https://github.com/lee-bh"
+      },
+      {
+        id: "student_1",
+        role: "student",
+        name: "김민지",
+        food: "마라탕",
+        location: "기숙사",
+        movie: "오디세이",
+        singer: "스파이에어",
+        sns: "@ljrxmo",
+        email: "gjbmjd0311@naver.com",
+        github: "https://github.com/winner3491-debug"
+      },
+      {
+        id: "student_2",
+        role: "student",
+        name: "김수정",
+        food: "엄마밥",
+        location: "하계동",
+        movie: "스파이더맨",
+        singer: "마이 케미컬 로맨스",
+        sns: "@tnwjd1229",
+        email: "haruya404@gmail.com",
+        github: "https://github.com/hana1229"
+      },
+      {
+        id: "student_3",
+        role: "student",
+        name: "김예진",
+        food: "쌈밥",
+        location: "수원",
+        movie: "오디세이",
+        singer: "지소쿠리클럽",
+        sns: "@yezzzzzzzzzzzin",
+        email: "zimzezin@gmail.com",
+        github: "https://github.com/zimzezin-yap"
+      },
+      {
+        id: "student_4",
+        role: "student",
+        name: "김주은",
+        food: "연어초밥",
+        location: "연신내",
+        movie: "옵세션",
+        singer: "실리카겔",
+        sns: "@pinking.making",
+        email: "pkxx128@gmail.com",
+        github: "https://github.com/piking-making"
+      },
+      {
+        id: "student_5",
+        role: "student",
+        name: "김채호",
+        food: "계란찜",
+        location: "하계",
+        movie: "오디세이",
+        singer: "킹누",
+        sns: "@k_chaeho",
+        email: "hoya991005@gmail.com",
+        github: "https://github.com/chaeho-kim"
+      },
+      {
+        id: "student_6",
+        role: "student",
+        name: "남미경",
+        food: "샌드위치",
+        location: "명일동",
+        movie: "슬로우 호시스",
+        singer: "alice merton",
+        sns: "@youanialways",
+        email: "quancrystar@gmail.com",
+        github: "https://github.com/quancrystar-ui"
+      },
+      {
+        id: "student_7",
+        role: "student",
+        name: "박소영",
+        food: "치킨",
+        location: "기숙사",
+        movie: "피아니스트",
+        singer: "빅뱅",
+        sns: "@parksozero",
+        email: "sozeropark@gmail.com",
+        github: "https://github.com/sozeropark"
+      },
+      {
+        id: "student_8",
+        role: "student",
+        name: "원유미",
+        food: "샤브샤브",
+        location: "방배동",
+        movie: "스파이더맨", // Chuyển từ "Spiderman" sang tiếng Hàn
+        singer: "Alvaro Soler",
+        sns: "@nv.quynhu",
+        email: "nv.quynhu26@gmail.com",
+        github: "https://github.com/nvquynhu26"
+      },
+      {
+        id: "student_9",
+        role: "student",
+        name: "임영현",
+        food: "-",
+        location: "-",
+        movie: "-",
+        singer: "-",
+        sns: "-",
+        email: "-",
+        github: "-"
+      },
+      {
+        id: "student_10",
+        role: "student",
+        name: "임훈정",
+        food: "삼겹살",
+        location: "중계동",
+        movie: "오디세이",
+        singer: "jayb",
+        sns: "@by_seohua",
+        email: "godbok25@gmail.com",
+        github: "https://github.com/godbok25"
+      },
+      {
+        id: "student_11",
+        role: "student",
+        name: "채영미",
+        food: "통닭",
+        location: "동두천",
+        movie: "들쥐",
+        singer: "드렁큰타이거",
+        sns: "@artbadwoman",
+        email: "gypog5122@naver.com",
+        github: "https://github.com/gypog5122-cell"
+      },
+      {
+        id: "student_12",
+        role: "student",
+        name: "최동욱",
+        food: "초밥",
+        location: "하계",
+        movie: "오디세이",
+        singer: "한로로",
+        sns: "@ch_dongwook",
+        email: "cdw0427@gmail.com",
+        github: "https://github.com/dw-427"
+      },
+      {
+        id: "student_13",
+        role: "student",
+        name: "카밀라",
+        food: "치즈 가리비",
+        location: "석계",
+        movie: "들쥐",
+        singer: "한로로",
+        sns: "@camisald",
+        email: "camisaldiviab.des@gmail.com",
+        github: "https://github.com/cami-sal"
+      },
+      {
+        id: "student_14",
+        role: "student",
+        name: "한다빈",
+        food: "뇨끼",
+        location: "공릉",
+        movie: "릴로와 스티치",
+        singer: "Laufey",
+        sns: "@dabinciii",
+        email: "dabin.d.han@gmail.com",
+        github: "https://github.com/dabinciii"
+      },
+      {
+        id: "student_15",
+        role: "student",
+        name: "호프슈타트 파울",
+        food: "피자",
+        location: "공릉",
+        movie: "라스트 에어 벤더",
+        singer: "잔나비",
+        sns: "@dtc_ph",
+        email: "phdtc@naver.com",
+        github: "https://github.com/dtcph"
+      },
+      {
+        id: "student_16",
+        role: "student",
+        name: "홍정욱",
+        food: "햄버거",
+        location: "전농동",
+        movie: "파라노만",
+        singer: "백예린",
+        sns: "@hongstle_studio",
+        email: "hongstle@gmail.com",
+        github: "https://github.com/hongstle-a11y"
+      },
+      {
+        id: "student_17",
+        role: "student",
+        name: "이서진",
+        food: "연어덮밥",
+        location: "하계",
+        movie: "치이카와",
+        singer: "나토리",
+        sns: "2_seo__jin",
+        email: "apec0714@gmail.com",
+        github: "https://github.com/HappyHaeyo"
+      }
+    ];
 
-        const form = document.getElementById('wishForm');
-        const submitBtn = document.getElementById('btnSubmit');
-        const statusAlert = document.getElementById('statusAlert');
-        const wishesContainer = document.getElementById('wishesContainer');
-        const pagination = document.getElementById('pagination');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const pageInfo = document.getElementById('pageInfo');
+    // Color definitions for links
+    const CATEGORY_COLORS = {
+      food: '#00ff88',     // Xanh lá
+      location: '#00d4ff', // Xanh dương
+      movie: '#ff2a85',    // Hồng
+      singer: '#b388ff'    // Tím
+    };
 
-        const ITEMS_PER_PAGE = 15;
-        let allWishes = [];
-        let currentPage = 1;
+    const activeFilters = {
+      movie: true,
+      location: true,
+      singer: true,
+      food: true
+    };
 
-        function showAlert(msg, isSuccess = true) {
-            statusAlert.textContent = msg;
-            statusAlert.className = 'alert-msg ' + (isSuccess ? 'alert-success' : 'alert-error');
-            statusAlert.style.display = 'block';
-            setTimeout(() => {
-                statusAlert.style.display = 'none';
-            }, 3000);
+    const container = document.getElementById('nodesContainer');
+    const canvas = document.getElementById('connectionsCanvas');
+    const ctx = canvas.getContext('2d');
+    const infoCard = document.getElementById('infoCard');
+
+    let nodeElements = {};
+    let nodePositions = {};
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      drawLines();
+    }
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+    });
+
+    // Toggle Filters
+    function toggleCategory(cat, elem) {
+      activeFilters[cat] = !activeFilters[cat];
+      if (activeFilters[cat]) {
+        elem.classList.add('active');
+      } else {
+        elem.classList.remove('active');
+      }
+      drawLines();
+    }
+
+    // Initialize Layout
+    function initNodes() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const centerX = w / 2;
+      const centerY = h / 2 + 10;
+
+      const students = membersData.filter(m => m.role === 'student');
+      const instructor = membersData.find(m => m.role === 'instructor');
+
+      // Giảng viên ở giữa
+      nodePositions[instructor.id] = { x: centerX, y: centerY };
+
+      // Sinh viên xung quanh (2 vòng ellipse để thoáng và đẹp mắt)
+      const totalStudents = students.length;
+      students.forEach((student, index) => {
+        // Phân lớp vòng trong (8 người) và vòng ngoài (9 người)
+        const isInner = index % 2 === 0;
+        const radiusX = isInner ? Math.min(w, h) * 0.28 : Math.min(w, h) * 0.42;
+        const radiusY = isInner ? Math.min(w, h) * 0.23 : Math.min(w, h) * 0.35;
+        const angle = (index / totalStudents) * (Math.PI * 2) - Math.PI / 2;
+
+        nodePositions[student.id] = {
+          x: centerX + Math.cos(angle) * radiusX,
+          y: centerY + Math.sin(angle) * radiusY
+        };
+      });
+
+      // Render HTML Nodes
+      membersData.forEach(member => {
+        const div = document.createElement('div');
+        div.className = `node ${member.role}`;
+        div.id = `node-${member.id}`;
+        div.innerText = member.name;
+
+        const pos = nodePositions[member.id];
+        div.style.left = `${pos.x}px`;
+        div.style.top = `${pos.y}px`;
+
+        // Event Dragging
+        enableDrag(div, member.id);
+
+        // Event Hover Tooltip
+        div.addEventListener('mouseenter', (e) => showCard(member, e));
+        div.addEventListener('mousemove', (e) => moveCard(e));
+        div.addEventListener('mouseleave', hideCard);
+
+        container.appendChild(div);
+        nodeElements[member.id] = div;
+      });
+
+      resizeCanvas();
+    }
+
+    // Drag and drop implementation
+    function enableDrag(elem, id) {
+      let isDragging = false;
+      let startX, startY;
+      let initialNodeX, initialNodeY;
+
+      elem.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return; // Chỉ chuột trái
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        initialNodeX = nodePositions[id].x;
+        initialNodeY = nodePositions[id].y;
+        elem.style.zIndex = 1000;
+        hideCard();
+
+        function onMouseMove(e) {
+          if (!isDragging) return;
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+          const newX = initialNodeX + dx;
+          const newY = initialNodeY + dy;
+
+          nodePositions[id].x = newX;
+          nodePositions[id].y = newY;
+          elem.style.left = `${newX}px`;
+          elem.style.top = `${newY}px`;
+
+          drawLines();
         }
 
-        function createWishElement(name, timestamp, wish) {
-            const li = document.createElement('li');
-            li.className = 'wish-card';
-            li.innerHTML = `
-                <div class="wish-header">
-                    <span class="wish-author">${escapeHtml(name)}</span>
-                    <span class="wish-time">${escapeHtml(timestamp)}</span>
-                </div>
-                <div class="wish-text">${escapeHtml(wish)}</div>
-            `;
-            return li;
+        function onMouseUp() {
+          isDragging = false;
+          elem.style.zIndex = elem.classList.contains('instructor') ? 30 : 20;
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
         }
 
-        // Render các lời chúc theo từng trang
-        function renderPage(page) {
-            currentPage = page;
-            const totalPages = Math.ceil(allWishes.length / ITEMS_PER_PAGE) || 1;
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      });
+    }
 
-            if (allWishes.length === 0) {
-                wishesContainer.innerHTML = '<li class="empty-state">No wishes yet. Be the first to leave one!</li>';
-                pagination.style.display = 'none';
-                return;
-            }
+    // Tooltip Info Card
+    function showCard(member, e) {
+      document.getElementById('cName').innerText = member.name;
+      document.getElementById('cRole').innerText = member.role === 'instructor' ? 'INSTRUCTOR (강사)' : 'STUDENT';
+      document.getElementById('cRole').style.borderColor = member.role === 'instructor' ? 'var(--instructor-glow)' : 'rgba(0, 240, 255, 0.4)';
+      document.getElementById('cRole').style.color = member.role === 'instructor' ? 'var(--instructor-glow)' : '#00f0ff';
 
-            const startIndex = (page - 1) * ITEMS_PER_PAGE;
-            const endIndex = startIndex + ITEMS_PER_PAGE;
-            const currentWishes = allWishes.slice(startIndex, endIndex);
+      document.getElementById('cFood').innerText = member.food || '-';
+      document.getElementById('cLoc').innerText = member.location || '-';
+      document.getElementById('cMovie').innerText = member.movie || '-';
+      document.getElementById('cSinger').innerText = member.singer || '-';
+      document.getElementById('cSns').innerText = member.sns || '-';
+      document.getElementById('cEmail').innerText = member.email || '-';
+      document.getElementById('cGithub').innerText = member.github || '-';
 
-            wishesContainer.innerHTML = '';
-            currentWishes.forEach(item => {
-                wishesContainer.appendChild(createWishElement(item.name, item.timestamp, item.wish));
-            });
+      infoCard.style.display = 'block';
+      moveCard(e);
+    }
 
-            // Hiển thị thanh điều hướng nếu có nhiều hơn 15 lời chúc
-            if (totalPages > 1) {
-                pagination.style.display = 'flex';
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-                prevBtn.disabled = (currentPage === 1);
-                nextBtn.disabled = (currentPage === totalPages);
-            } else {
-                pagination.style.display = 'none';
-            }
-        }
+    function moveCard(e) {
+      const offset = 18;
+      let x = e.clientX + offset;
+      let y = e.clientY + offset;
 
-        // Tải danh sách lời chúc từ server
-        async function fetchRecentWishes() {
-            try {
-                const response = await fetch(SCRIPT_URL);
-                const result = await response.json();
+      if (x + 330 > window.innerWidth) {
+        x = e.clientX - 330 - 10;
+      }
+      if (y + 300 > window.innerHeight) {
+        y = e.clientY - 300 - 10;
+      }
 
-                if (result.status === "success" && Array.isArray(result.data)) {
-                    allWishes = result.data;
-                    renderPage(1);
-                } else {
-                    wishesContainer.innerHTML = '<li class="empty-state">No wishes yet. Be the first to leave one!</li>';
+      infoCard.style.left = `${x}px`;
+      infoCard.style.top = `${y}px`;
+    }
+
+    function hideCard() {
+      infoCard.style.display = 'none';
+    }
+
+    // Vẽ các đường liên kết giữa các sinh viên/giảng viên có cùng sở thích
+    function drawLines() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const categories = ['movie', 'location', 'singer', 'food'];
+
+      categories.forEach(cat => {
+        if (!activeFilters[cat]) return;
+
+        const color = CATEGORY_COLORS[cat];
+
+        // Nhóm các thành viên theo giá trị
+        const groups = {};
+        membersData.forEach(m => {
+          let val = m[cat];
+          if (!val || val === '-' || val.trim() === '') return;
+          val = val.trim().toLowerCase();
+          if (!groups[val]) groups[val] = [];
+          groups[val].push(m.id);
+        });
+
+        // Vẽ các đường line nối giữa từng cặp có cùng giá trị
+        Object.keys(groups).forEach(val => {
+          const ids = groups[val];
+          if (ids.length > 1) {
+            for (let i = 0; i < ids.length; i++) {
+              for (let j = i + 1; j < ids.length; j++) {
+                const p1 = nodePositions[ids[i]];
+                const p2 = nodePositions[ids[j]];
+                if (p1 && p2) {
+                  drawLine(p1.x, p1.y, p2.x, p2.y, color);
                 }
-            } catch (error) {
-                console.error("Error loading wishes:", error);
-                wishesContainer.innerHTML = '<li class="empty-state">Unable to load wishes at the moment.</li>';
+              }
             }
-        }
-
-        // Sự kiện nút chuyển trang
-        prevBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                renderPage(currentPage - 1);
-            }
+          }
         });
+      });
+    }
 
-        nextBtn.addEventListener('click', () => {
-            const totalPages = Math.ceil(allWishes.length / ITEMS_PER_PAGE);
-            if (currentPage < totalPages) {
-                renderPage(currentPage + 1);
-            }
-        });
+    function drawLine(x1, y1, x2, y2, color) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
 
-        // Xử lý gửi lời chúc mới
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
+      // Glow effect neon
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.0;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.globalAlpha = 0.65;
+      ctx.stroke();
 
-            const nameInput = document.getElementById('userName');
-            const wishInput = document.getElementById('userWish');
+      // Điểm pulse nhỏ ở trung điểm đường nối
+      const midX = (x1 + x2) / 2;
+      const midY = (y1 + y2) / 2;
+      ctx.beginPath();
+      ctx.arc(midX, midY, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = color;
+      ctx.fill();
 
-            const name = nameInput.value.trim();
-            const wish = wishInput.value.trim();
+      ctx.restore();
+    }
 
-            if (!name || !wish) return;
-
-            // 1. Cập nhật tức thì vào danh sách cục bộ và render lại trang đầu
-            allWishes.unshift({
-                name: name,
-                timestamp: 'Just now',
-                wish: wish
-            });
-            renderPage(1);
-
-            // Reset ô nhập và báo thành công
-            nameInput.value = '';
-            wishInput.value = '';
-            showAlert('Your wish has been posted! ✨', true);
-
-            // 2. Gửi dữ liệu ngầm lên Google Sheets
-            const postData = new URLSearchParams();
-            postData.append('name', name);
-            postData.append('wish', wish);
-
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: postData.toString()
-            }).catch(err => {
-                console.error("Background sync failed:", err);
-            });
-        });
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Khởi động tải dữ liệu
-        fetchRecentWishes();
-    </script>
+    // Khởi động
+    window.addEventListener('DOMContentLoaded', () => {
+      initNodes();
+    });
+  </script>
 </body>
 </html>
