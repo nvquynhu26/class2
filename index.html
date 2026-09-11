@@ -91,6 +91,26 @@
             cursor: not-allowed;
         }
 
+        .alert-msg {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
         .recent-wishes {
             margin-top: 36px;
             border-top: 1px solid #e5e7eb;
@@ -121,7 +141,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .wish-author {
@@ -139,6 +159,7 @@
             font-size: 14px;
             color: #374151;
             white-space: pre-wrap;
+            word-break: break-word;
         }
 
         .empty-state {
@@ -171,6 +192,7 @@
             </div>
 
             <button type="submit" id="btnSubmit">Send Wish</button>
+            <div id="statusAlert" class="alert-msg"></div>
         </form>
 
         <section class="recent-wishes">
@@ -182,17 +204,27 @@
     </main>
 
     <script>
-        // DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcJMaXWpH36YQgAHz5h_8Mm74j5MSKLzoEwTl7AelLRX8tHu8txrGSj0KYYWJ-5Jd4Dw/exec';
+        // DÁN URL GOOGLE APPS SCRIPT WEB APP CỦA BẠN VÀO ĐÂY
+        const SCRIPT_URL = 'THAY_BANG_URL_GOOGLE_APPS_SCRIPT_CUA_BAN';
 
         const form = document.getElementById('wishForm');
         const submitBtn = document.getElementById('btnSubmit');
+        const statusAlert = document.getElementById('statusAlert');
         const wishesContainer = document.getElementById('wishesContainer');
 
-        // Hàm tải danh sách 15 lời chúc gần nhất
+        function showAlert(msg, isSuccess = true) {
+            statusAlert.textContent = msg;
+            statusAlert.className = 'alert-msg ' + (isSuccess ? 'alert-success' : 'alert-error');
+            statusAlert.style.display = 'block';
+            setTimeout(() => {
+                statusAlert.style.display = 'none';
+            }, 4000);
+        }
+
+        // Tải 15 lời chúc gần nhất
         async function fetchRecentWishes() {
-            if (SCRIPT_URL === 'THAY_BANG_URL_GOOGLE_APPS_SCRIPT_CUA_BAN') {
-                wishesContainer.innerHTML = '<li class="empty-state">Vui lòng thay SCRIPT_URL bằng URL Apps Script của bạn.</li>';
+            if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycby37DzEtl6oPZ5lZnR05JrGYM-wWz-m5kRTVGyb5BPHfMGZfnoFsKo1By4RkKCrpLoA/exec') {
+                wishesContainer.innerHTML = '<li class="empty-state">Vui lòng thay thế SCRIPT_URL bằng URL Apps Script đã triển khai.</li>';
                 return;
             }
 
@@ -200,7 +232,7 @@
                 const response = await fetch(SCRIPT_URL);
                 const result = await response.json();
 
-                if (result.status === "success" && result.data.length > 0) {
+                if (result.status === "success" && result.data && result.data.length > 0) {
                     wishesContainer.innerHTML = '';
                     result.data.forEach(item => {
                         const li = document.createElement('li');
@@ -219,58 +251,71 @@
                 }
             } catch (error) {
                 console.error("Error loading wishes:", error);
-                wishesContainer.innerHTML = '<li class="empty-state">Could not load wishes at the moment.</li>';
+                wishesContainer.innerHTML = '<li class="empty-state">Unable to load recent wishes.</li>';
             }
         }
 
-        // Xử lý gửi lời chúc
+        // Xử lý gửi lời chúc bằng URL-Encoded (tránh triệt để lỗi CORS)
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const name = document.getElementById('userName').value.trim();
-            const wish = document.getElementById('userWish').value.trim();
+            if (SCRIPT_URL === 'THAY_BANG_URL_GOOGLE_APPS_SCRIPT_CUA_BAN') {
+                alert("Vui lòng gắn SCRIPT_URL trước khi gửi!");
+                return;
+            }
+
+            const nameInput = document.getElementById('userName');
+            const wishInput = document.getElementById('userWish');
+
+            const name = nameInput.value.trim();
+            const wish = wishInput.value.trim();
 
             if (!name || !wish) return;
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Sending...';
 
+            // Dùng URLSearchParams tương thích 100% với Google Apps Script
+            const postData = new URLSearchParams();
+            postData.append('name', name);
+            postData.append('wish', wish);
+
             try {
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Sử dụng no-cors để gửi mượt mà qua Apps Script
+                    mode: 'no-cors',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: JSON.stringify({ name, wish })
+                    body: postData.toString()
                 });
 
-                // Reset form sau khi gửi
-                form.reset();
-                
-                // Đợi 1 giây để Google Sheet cập nhật rồi tải lại danh sách
+                // Đăng thành công
+                nameInput.value = '';
+                wishInput.value = '';
+                showAlert('Your wish has been submitted successfully!', true);
+
+                // Chờ Google Sheet ghi nhận trong 1.2s rồi cập nhật lại danh sách bên dưới
                 setTimeout(() => {
                     fetchRecentWishes();
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Send Wish';
-                }, 1000);
+                }, 1200);
 
             } catch (error) {
                 console.error("Error submitting wish:", error);
-                alert("Failed to send your wish. Please try again.");
+                showAlert('Failed to send wish. Please try again.', false);
+            } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Send Wish';
             }
         });
 
-        // Hàm hỗ trợ ngăn ngừa XSS khi hiển thị text người dùng nhập
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // Tự động tải danh sách khi mở trang
+        // Tải danh sách khi khởi động trang
         fetchRecentWishes();
     </script>
 </body>
