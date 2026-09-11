@@ -19,7 +19,7 @@
             background-color: #0a092d;
             background-image: 
                 radial-gradient(at 0% 0%, rgba(66, 85, 255, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(255, 64, 129, 0.12) 0px, transparent 50%);
+                radial-gradient(at 100% 100%, rgba(255, 64, 129, 0.15) 0px, transparent 50%);
             min-height: 100vh;
             padding: 24px;
         }
@@ -29,15 +29,16 @@
             padding: 40px 0 24px;
         }
 
+        /* Tiêu đề màu hồng Neon rực rỡ */
         header h1 {
-            font-size: 2.2rem;
+            font-size: 2.3rem;
             font-weight: 800;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 50%, #ff4081 100%);
+            background: linear-gradient(135deg, #ff2a85 0%, #ff5e98 50%, #ff80bf 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
-            text-shadow: 0 0 30px rgba(79, 172, 254, 0.3);
+            filter: drop-shadow(0 0 20px rgba(255, 42, 133, 0.5));
         }
 
         header p {
@@ -111,11 +112,11 @@
             min-height: 95px;
         }
 
-        button {
+        .btn-submit {
             display: inline-block;
             margin-top: 20px;
             padding: 12px 28px;
-            background: linear-gradient(135deg, #ff4081 0%, #f43f5e 100%);
+            background: linear-gradient(135deg, #ff2a85 0%, #ff5e98 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -123,21 +124,21 @@
             font-size: 15px;
             font-weight: 700;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 42, 133, 0.4);
             transition: all 0.25s ease;
         }
 
-        button:hover {
+        .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 64, 129, 0.6);
-            background: linear-gradient(135deg, #ff5292 0%, #fb7185 100%);
+            box-shadow: 0 6px 22px rgba(255, 42, 133, 0.6);
+            background: linear-gradient(135deg, #ff4395 0%, #ff73a8 100%);
         }
 
-        button:active {
+        .btn-submit:active {
             transform: translateY(0);
         }
 
-        button:disabled {
+        .btn-submit:disabled {
             background: #475569;
             box-shadow: none;
             cursor: not-allowed;
@@ -171,10 +172,16 @@
             padding-top: 28px;
         }
 
+        .recent-wishes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
         .recent-wishes h3 {
             font-size: 19px;
             font-weight: 700;
-            margin-bottom: 20px;
             color: #a7f3d0;
             display: flex;
             align-items: center;
@@ -215,7 +222,7 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
+            from { opacity: 0; transform: translateY(-6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -250,6 +257,54 @@
             font-size: 14px;
             font-style: italic;
         }
+
+        /* Phân trang với nút mũi tên trái phải */
+        .pagination-container {
+            margin-top: 24px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-btn {
+            background-color: #1c1d4a;
+            border: 1px solid #2e3856;
+            color: #00f2fe;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #00f2fe;
+            color: #0a092d;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+            transform: scale(1.05);
+        }
+
+        .nav-btn:disabled {
+            color: #475569;
+            border-color: #24264d;
+            background-color: #141538;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .page-info {
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            min-width: 100px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -260,7 +315,7 @@
     </header>
 
     <main>
-        <h2>Today is Sep 11th 2026</h2>
+        <h2>Wishes</h2>
         <p>Hope you have a wonderful day</p>
         
         <form id="wishForm">
@@ -274,26 +329,44 @@
                 <textarea id="userWish" placeholder="Write your heartfelt wish here..." required></textarea>
             </div>
 
-            <button type="submit" id="btnSubmit">Send Wish ✨</button>
+            <button type="submit" id="btnSubmit" class="btn-submit">Send Wish ✨</button>
             <div id="statusAlert" class="alert-msg"></div>
         </form>
 
         <section class="recent-wishes">
-            <h3>Recent 15 Wishes</h3>
+            <div class="recent-wishes-header">
+                <h3>Wishes</h3>
+            </div>
+            
             <ul class="wish-list" id="wishesContainer">
                 <li class="empty-state">Loading wishes...</li>
             </ul>
+
+            <!-- Bộ điều khiển chuyển trang -->
+            <div class="pagination-container" id="pagination">
+                <button type="button" class="nav-btn" id="prevBtn" title="Previous Page">←</button>
+                <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                <button type="button" class="nav-btn" id="nextBtn" title="Next Page">→</button>
+            </div>
         </section>
     </main>
 
     <script>
-        // DÁN URL GOOGLE APPS SCRIPT CỦA BẠN VÀO ĐÂY
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbza95F6Z8aVWuwygF-ecQwb8g4PCAFKzkP0gXznPmAIPX44v4SxoscvEy9XsWJaLJ9wqg/exec';
+        // Link Apps Script của bạn
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJhS17FZ8OhH9oVQM-hLA-xmTjC-InIfNucGhCosOdpwz8pODMTsNKwDRkImIoBkGpQA/exec';
 
         const form = document.getElementById('wishForm');
         const submitBtn = document.getElementById('btnSubmit');
         const statusAlert = document.getElementById('statusAlert');
         const wishesContainer = document.getElementById('wishesContainer');
+        const pagination = document.getElementById('pagination');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+
+        const ITEMS_PER_PAGE = 15;
+        let allWishes = [];
+        let currentPage = 1;
 
         function showAlert(msg, isSuccess = true) {
             statusAlert.textContent = msg;
@@ -317,39 +390,72 @@
             return li;
         }
 
-        // Tải 15 lời chúc gần nhất khi khởi động trang
-        async function fetchRecentWishes() {
-            if (SCRIPT_URL === 'THAY_BANG_URL_GOOGLE_APPS_SCRIPT_CUA_BAN') {
-                wishesContainer.innerHTML = '<li class="empty-state">Vui lòng thay thế SCRIPT_URL bằng URL Apps Script.</li>';
+        // Render các lời chúc theo từng trang
+        function renderPage(page) {
+            currentPage = page;
+            const totalPages = Math.ceil(allWishes.length / ITEMS_PER_PAGE) || 1;
+
+            if (allWishes.length === 0) {
+                wishesContainer.innerHTML = '<li class="empty-state">No wishes yet. Be the first to leave one!</li>';
+                pagination.style.display = 'none';
                 return;
             }
 
+            const startIndex = (page - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            const currentWishes = allWishes.slice(startIndex, endIndex);
+
+            wishesContainer.innerHTML = '';
+            currentWishes.forEach(item => {
+                wishesContainer.appendChild(createWishElement(item.name, item.timestamp, item.wish));
+            });
+
+            // Hiển thị thanh điều hướng nếu có nhiều hơn 15 lời chúc
+            if (totalPages > 1) {
+                pagination.style.display = 'flex';
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+                prevBtn.disabled = (currentPage === 1);
+                nextBtn.disabled = (currentPage === totalPages);
+            } else {
+                pagination.style.display = 'none';
+            }
+        }
+
+        // Tải danh sách lời chúc từ server
+        async function fetchRecentWishes() {
             try {
                 const response = await fetch(SCRIPT_URL);
                 const result = await response.json();
 
-                if (result.status === "success" && result.data && result.data.length > 0) {
-                    wishesContainer.innerHTML = '';
-                    result.data.forEach(item => {
-                        wishesContainer.appendChild(createWishElement(item.name, item.timestamp, item.wish));
-                    });
+                if (result.status === "success" && Array.isArray(result.data)) {
+                    allWishes = result.data;
+                    renderPage(1);
                 } else {
                     wishesContainer.innerHTML = '<li class="empty-state">No wishes yet. Be the first to leave one!</li>';
                 }
             } catch (error) {
                 console.error("Error loading wishes:", error);
-                wishesContainer.innerHTML = '<li class="empty-state">Unable to load recent wishes.</li>';
+                wishesContainer.innerHTML = '<li class="empty-state">Unable to load wishes at the moment.</li>';
             }
         }
 
-        // Gửi lời chúc và cập nhật tức thì (Optimistic UI)
+        // Sự kiện nút chuyển trang
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                renderPage(currentPage - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(allWishes.length / ITEMS_PER_PAGE);
+            if (currentPage < totalPages) {
+                renderPage(currentPage + 1);
+            }
+        });
+
+        // Xử lý gửi lời chúc mới
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            if (SCRIPT_URL === 'THAY_BANG_URL_GOOGLE_APPS_SCRIPT_CUA_BAN') {
-                alert("Vui lòng gắn SCRIPT_URL trước khi gửi!");
-                return;
-            }
 
             const nameInput = document.getElementById('userName');
             const wishInput = document.getElementById('userWish');
@@ -359,27 +465,20 @@
 
             if (!name || !wish) return;
 
-            // Xóa thông báo trống nếu có
-            const emptyEl = wishesContainer.querySelector('.empty-state');
-            if (emptyEl) {
-                wishesContainer.innerHTML = '';
-            }
+            // 1. Cập nhật tức thì vào danh sách cục bộ và render lại trang đầu
+            allWishes.unshift({
+                name: name,
+                timestamp: 'Just now',
+                wish: wish
+            });
+            renderPage(1);
 
-            // 1. Chèn tức thì thẻ mới lên đầu danh sách
-            const newCard = createWishElement(name, 'Just now', wish);
-            wishesContainer.insertBefore(newCard, wishesContainer.firstChild);
-
-            // Giữ lại tối đa 15 thẻ trên màn hình
-            while (wishesContainer.children.length > 15) {
-                wishesContainer.removeChild(wishesContainer.lastChild);
-            }
-
-            // Reset form và thông báo
+            // Reset ô nhập và báo thành công
             nameInput.value = '';
             wishInput.value = '';
             showAlert('Your wish has been posted! ✨', true);
 
-            // 2. Gửi ngầm tới Google Sheets
+            // 2. Gửi dữ liệu ngầm lên Google Sheets
             const postData = new URLSearchParams();
             postData.append('name', name);
             postData.append('wish', wish);
@@ -402,6 +501,7 @@
             return div.innerHTML;
         }
 
+        // Khởi động tải dữ liệu
         fetchRecentWishes();
     </script>
 </body>
